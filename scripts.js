@@ -24,6 +24,17 @@ class Model{
 		// add task to this.tasks
 		this.tasks.push(task)
 		this.displayTasks(this.tasks)
+		console.log(this.tasks)
+	}
+	deleteTask(elementID){
+		this.tasks.splice(elementID - 1, 1)
+		const newTasks = this.tasks
+		this.tasks = []
+		newTasks.forEach(element =>{
+			this.addTask(element.text)
+		})
+		this.displayTasks(this.tasks)
+		console.log(this.tasks)
 	}
 	// 
 	taskListChanged(callback){
@@ -104,20 +115,21 @@ class View{
 			this.resetInput()
 		})
 	}
-
-	deleteTask(){
-
-	}
-
 	getElement(selector){
 		const element = document.querySelector(selector)
 		return element
 	}
-
 	get _taskText(){
 		return this.input.value
 	}
-
+	deleteTask(handler){
+		this.taskList.addEventListener('click', event =>{
+			if(event.target.textContent = 'Delete'){
+				this.taskList.removeChild(event.target.parentElement)
+				handler(event.target.parentElement.id)
+			}
+		})
+	}
 	// setters
 	setElement(tag, classname){
 		const element = document.createElement(tag)
@@ -140,15 +152,17 @@ class Controller{
 
 		this.model.taskListChanged(this.displayTasks)
 		this.view.addTask(this.handleAddTask)
-
+		this.view.deleteTask(this.handleDeleteTask)
 		this.displayTasks(this.model.tasks)
 	}
-
 	displayTasks = tasks => {
 		this.view.displayTasks(tasks)
 	}
 	handleAddTask = taskText => {
 		this.model.addTask(taskText)
+	}
+	handleDeleteTask = element => {
+		this.model.deleteTask(element)
 	}
 }
 
